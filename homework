@@ -1,0 +1,151 @@
+Avoid Side effect>
+
+//Bad code//
+
+// Global variable referenced by following function.
+// If we had another function that used this name, now it'd be an array and it could break it.
+let name = "Ryan McDermott";
+
+function splitIntoFirstAndLastName() {
+  name = name.split(" ");
+}
+
+splitIntoFirstAndLastName();
+
+console.log(name); // ['Ryan', 'McDermott'];
+
+//good code//
+
+function splitIntoFirstAndLastName(name) {
+  return name.split(" ");
+}
+
+const name = "Ryan McDermott";
+const newName = splitIntoFirstAndLastName(name);
+
+console.log(name); // 'Ryan McDermott';
+console.log(newName); // ['Ryan', 'McDermott'];
+
+
+//end//
+___________________________________________________________________________________________
+
+
+
+
+//Bad code //
+
+const Animal = function(age) {
+  if (!(this instanceof Animal)) {
+    throw new Error("Instantiate Animal with `new`");
+  }
+
+  this.age = age;
+};
+
+Animal.prototype.move = function move() {};
+
+const Mammal = function(age, furColor) {
+  if (!(this instanceof Mammal)) {
+    throw new Error("Instantiate Mammal with `new`");
+  }
+
+  Animal.call(this, age);
+  this.furColor = furColor;
+};
+
+Mammal.prototype = Object.create(Animal.prototype);
+Mammal.prototype.constructor = Mammal;
+Mammal.prototype.liveBirth = function liveBirth() {};
+
+const Human = function(age, furColor, languageSpoken) {
+  if (!(this instanceof Human)) {
+    throw new Error("Instantiate Human with `new`");
+  }
+
+  Mammal.call(this, age, furColor);
+  this.languageSpoken = languageSpoken;
+};
+
+Human.prototype = Object.create(Mammal.prototype);
+Human.prototype.constructor = Human;
+Human.prototype.speak = function speak() {};
+
+
+
+//Good code//
+
+class Animal {
+  constructor(age) {
+    this.age = age;
+  }
+
+  move() {
+    /* ... */
+  }
+}
+
+class Mammal extends Animal {
+  constructor(age, furColor) {
+    super(age);
+    this.furColor = furColor;
+  }
+
+  liveBirth() {
+    /* ... */
+  }
+}
+
+class Human extends Mammal {
+  constructor(age, furColor, languageSpoken) {
+    super(age, furColor);
+    this.languageSpoken = languageSpoken;
+  }
+
+  speak() {
+    /* ... */
+  }
+}
+
+
+//end//
+
+_____________________________________________________________________________
+
+
+
+
+//Bad code//
+
+const a = document.getElementById('a'),
+b = document.getElementById('b'),
+c = document.getElementById('c');
+d = document.getElementById('d');
+
+
+//Good code//
+
+const elements = {};
+['a', 'b', 'c', 'd'].forEach(item => elements = { 
+  ...elements, 
+  [item]: document.getElementById(item) 
+});
+const { a, b, c, d } = elements;
+
+
+//end//
+_______________________________________________________________________________
+
+
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
